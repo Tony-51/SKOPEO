@@ -933,16 +933,16 @@ if run_pipeline:
         with ThreadPoolExecutor(max_workers=3) as discovery_executor:
             lens_future = discovery_executor.submit(run_lens_pipeline)
             profile_future = discovery_executor.submit(
-                search_public_profile, public_profile_url, 40
+                search_public_profile, public_profile_url, 10
             ) if public_profile_url else None
             crawler_future = discovery_executor.submit(
                 crawl_public_web,
                 effective_crawler_seeds,
-                max_pages=8,
+                max_pages=2,
                 max_depth=1,
                 same_domain_only=True,
-                render_javascript=True,
-                request_timeout=2.5,
+                render_javascript=False,
+                request_timeout=1.5,
                 delay=0,
             )
 

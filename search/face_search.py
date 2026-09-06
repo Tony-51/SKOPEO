@@ -24,7 +24,7 @@ def _headers():
     }
 
 
-def search_by_face(image_path, timeout_seconds=180, poll_seconds=1):
+def search_by_face(image_path, timeout_seconds=20, poll_seconds=1):
     """Search the public web by face using FaceCheck's face-search API.
 
     This is intentionally not Google Lens and does not require a public image URL.
@@ -38,7 +38,7 @@ def search_by_face(image_path, timeout_seconds=180, poll_seconds=1):
             headers=headers,
             files={"images": image_file},
             data={"id_search": ""},
-            timeout=60,
+            timeout=10,
         )
 
     response.raise_for_status()
@@ -64,11 +64,12 @@ def search_by_face(image_path, timeout_seconds=180, poll_seconds=1):
     deadline = time.time() + timeout_seconds
 
     while time.time() < deadline:
+        remaining = max(0.5, deadline - time.time())
         response = requests.post(
             f"{FACECHECK_BASE_URL}/api/search",
             headers={**headers, "Content-Type": "application/json"},
             json=payload,
-            timeout=60,
+            timeout=min(8, remaining),
         )
         response.raise_for_status()
         data = response.json()

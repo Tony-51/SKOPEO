@@ -84,7 +84,7 @@ def _google_search(params):
     response = requests.get(
         "https://serpapi.com/search",
         params={**params, "api_key": api_key, "hl": "en", "gl": "in"},
-        timeout=60,
+        timeout=6,
     )
     response.raise_for_status()
     return response.json()

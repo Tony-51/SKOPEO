@@ -226,11 +226,11 @@ def _fetch_browser(page, url, timeout):
 
 def crawl_public_web(
     seed_urls,
-    max_pages=80,
-    max_depth=3,
+    max_pages=20,
+    max_depth=2,
     same_domain_only=False,
-    request_timeout=12,
-    delay=0.25,
+    request_timeout=4,
+    delay=0,
     render_javascript=True,
 ):
     """Crawl public pages and return image candidates + crawl diagnostics."""

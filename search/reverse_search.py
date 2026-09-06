@@ -113,7 +113,7 @@ def upload_image_to_serpapi(image_path):
             "https://serpapi.com/image",
             files={"image": ("face.jpg", image_file, "image/jpeg")},
             data={"api_key": api_key},
-            timeout=15,
+            timeout=8,
         )
 
     if not response.ok:
@@ -154,7 +154,7 @@ def search_google_lens_image_id(image_id, search_type="visual_matches", query=No
     response = requests.get(
         "https://serpapi.com/search",
         params=params,
-        timeout=15,
+        timeout=8,
     )
 
     if not response.ok:
