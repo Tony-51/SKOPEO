@@ -33,7 +33,7 @@ from search.reverse_search import (
 from search.face_matcher import compare_faces
 from search.web_crawler import crawl_public_web
 from search.profile_search import search_public_profile
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait
 from blockchain.chain import Blockchain
 from blockchain.verify_result import create_fingerprint
 
@@ -247,88 +247,97 @@ st.markdown(
 
     hr { border-color: rgba(245,223,0,.35); }
 
-    /* Animated pipeline rail */
+    /* Premium animated pipeline rail */
     .pipeline-wrap {
-        margin-top: .4rem;
+        margin-top: .5rem;
         font-family: "DM Mono", monospace;
+        position: relative;
     }
     .pipeline-item {
         position: relative;
-        padding: .65rem .6rem .65rem 2.1rem;
-        margin: .25rem 0;
-        border-left: 1px solid rgba(245,223,0,.35);
-        transition: all .2s ease;
+        padding: .78rem .7rem .78rem 2.15rem;
+        margin: .32rem 0;
+        border: 1px solid rgba(245,223,0,.12);
+        border-left: 2px solid rgba(245,223,0,.28);
+        border-radius: 10px;
+        background: rgba(255,255,255,.018);
+        transition: transform .25s ease, background .25s ease, border-color .25s ease, box-shadow .25s ease;
+        overflow: hidden;
+    }
+    .pipeline-item::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(110deg, transparent 20%, rgba(245,223,0,.08) 48%, transparent 76%);
+        transform: translateX(-120%);
+        animation: pipelineSweep 3.2s ease-in-out infinite;
+        pointer-events: none;
+    }
+    .pipeline-item:hover {
+        transform: translateX(4px);
+        background: rgba(245,223,0,.055);
+        border-color: rgba(245,223,0,.42);
     }
     .pipeline-item::before {
         content: "";
         position: absolute;
-        left: -.42rem;
-        top: 1rem;
-        width: .7rem;
-        height: .7rem;
+        left: .55rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: .68rem;
+        height: .68rem;
         border: 1px solid var(--hh-yellow);
         background: var(--hh-green-dark);
         border-radius: 50%;
+        z-index: 2;
     }
-    .pipeline-item.done { opacity: .82; }
+    .pipeline-item.done { opacity: .9; }
     .pipeline-item.done::before {
         background: var(--hh-yellow);
-        box-shadow: 0 0 0 3px rgba(245,223,0,.12);
+        box-shadow: 0 0 0 4px rgba(245,223,0,.10), 0 0 14px rgba(245,223,0,.28);
     }
     .pipeline-item.active {
-        border-left: 2px solid var(--hh-pink);
-        background: rgba(255,20,147,.08);
-        transform: translateX(3px);
+        border-left: 3px solid var(--hh-pink);
+        background: linear-gradient(90deg, rgba(255,20,147,.14), rgba(255,20,147,.035));
+        transform: translateX(5px);
+        box-shadow: 0 8px 28px rgba(0,0,0,.16), inset 0 0 24px rgba(255,20,147,.04);
     }
     .pipeline-item.active::before {
         border-color: var(--hh-pink);
         background: var(--hh-pink);
-        animation: pipelinePulse 1.1s infinite;
+        box-shadow: 0 0 0 0 rgba(255,20,147,.55);
+        animation: pipelinePulse 1.25s infinite;
     }
-    .pipeline-item.pending { opacity: .5; }
-    .pipeline-name {
-        font-weight: 700;
-        font-size: .78rem;
-        letter-spacing: .03em;
-    }
-    .pipeline-tech {
-        margin-top: .15rem;
-        font-size: .68rem;
-        opacity: .82;
-        line-height: 1.35;
-    }
-    .pipeline-state {
-        display: inline-block;
-        margin-top: .25rem;
-        font-size: .58rem;
-        letter-spacing: .12em;
-        text-transform: uppercase;
-    }
-    .pipeline-item.active .pipeline-state {
-        color: var(--hh-pink) !important;
-        animation: pipelineBlink .9s infinite alternate;
-    }
+    .pipeline-item.pending { opacity: .48; }
+    .pipeline-name { font-weight: 700; font-size: .78rem; letter-spacing: .03em; }
+    .pipeline-tech { margin-top: .18rem; font-size: .66rem; opacity: .78; line-height: 1.35; }
+    .pipeline-state { display: inline-block; margin-top: .3rem; font-size: .56rem; letter-spacing: .13em; text-transform: uppercase; }
+    .pipeline-item.active .pipeline-state { color: var(--hh-pink) !important; animation: pipelineBlink .8s infinite alternate; }
     .pipeline-item.done .pipeline-state { color: var(--hh-yellow) !important; }
     .pipeline-line {
-        height: 1px;
-        margin: .65rem 0 1rem;
-        background: linear-gradient(90deg, var(--hh-pink), rgba(245,223,0,.15));
-        transform-origin: left;
-        animation: pipelineScan 1.8s ease-in-out infinite;
+        height: 1px; margin: .42rem .25rem .42rem 1rem;
+        background: linear-gradient(90deg, rgba(245,223,0,.12), rgba(255,20,147,.75), rgba(245,223,0,.08));
+        transform-origin: left; animation: pipelineScan 2.2s ease-in-out infinite;
     }
-    @keyframes pipelinePulse {
-        0% { box-shadow: 0 0 0 0 rgba(255,20,147,.65); }
-        70% { box-shadow: 0 0 0 8px rgba(255,20,147,0); }
-        100% { box-shadow: 0 0 0 0 rgba(255,20,147,0); }
+    .search-activity {
+        margin: 1rem 0 1.2rem; padding: 1.1rem 1.25rem; border-radius: 14px;
+        border: 1px solid rgba(245,223,0,.28);
+        background: linear-gradient(135deg, rgba(4,59,37,.9), rgba(7,91,53,.65));
+        box-shadow: 0 12px 35px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.05);
+        font-family: "DM Mono", monospace; overflow: hidden; position: relative;
     }
-    @keyframes pipelineBlink {
-        from { opacity: .55; }
-        to { opacity: 1; }
-    }
-    @keyframes pipelineScan {
-        0%, 100% { transform: scaleX(.25); opacity: .35; }
-        50% { transform: scaleX(1); opacity: 1; }
-    }
+    .search-activity::before { content:""; position:absolute; top:0; left:-30%; width:30%; height:2px; background:var(--hh-pink); box-shadow:0 0 18px var(--hh-pink); animation: searchBeam 1.35s linear infinite; }
+    .search-title { font-weight:700; letter-spacing:.1em; text-transform:uppercase; font-size:.78rem; }
+    .search-sub { margin-top:.35rem; font-size:.64rem; opacity:.72; letter-spacing:.05em; }
+    .search-dots { display:flex; gap:.35rem; margin-top:.85rem; }
+    .search-dots span { width:.42rem; height:.42rem; border-radius:50%; background:var(--hh-yellow); animation: dotPulse 1s infinite ease-in-out; }
+    .search-dots span:nth-child(2){animation-delay:.16s}.search-dots span:nth-child(3){animation-delay:.32s}.search-dots span:nth-child(4){animation-delay:.48s}
+    @keyframes pipelinePulse { 0%{box-shadow:0 0 0 0 rgba(255,20,147,.65)} 70%{box-shadow:0 0 0 9px rgba(255,20,147,0)} 100%{box-shadow:0 0 0 0 rgba(255,20,147,0)} }
+    @keyframes pipelineBlink { from{opacity:.55} to{opacity:1} }
+    @keyframes pipelineScan { 0%,100%{transform:scaleX(.2);opacity:.25} 50%{transform:scaleX(1);opacity:1} }
+    @keyframes pipelineSweep { 0%,45%{transform:translateX(-120%)} 75%,100%{transform:translateX(120%)} }
+    @keyframes searchBeam { from{left:-30%} to{left:110%} }
+    @keyframes dotPulse { 0%,100%{transform:translateY(0);opacity:.35} 50%{transform:translateY(-4px);opacity:1} }
 
     @media (max-width: 900px) {
         .hh-title { font-size: clamp(3.5rem, 17vw, 6rem); }
@@ -793,7 +802,15 @@ if run_pipeline:
         # STEP 4 — PARALLEL DISCOVERY
         # --------------------------------------------------
 
-        status.info(" Starting Google Lens and independent web crawler in parallel...")
+        st.markdown(
+            """<div class="search-activity">
+                <div class="search-title">LIVE DISCOVERY IN PROGRESS</div>
+                <div class="search-sub">Querying visual matches • checking authorized public sources • ranking evidence</div>
+                <div class="search-dots"><span></span><span></span><span></span><span></span></div>
+            </div>""",
+            unsafe_allow_html=True,
+        )
+        status.info("Starting Google Lens and independent web crawler in parallel...")
 
         face_search_path = create_face_search_image(
             image_array,
@@ -930,38 +947,75 @@ if run_pipeline:
         if public_profile_url and public_profile_url not in effective_crawler_seeds:
             effective_crawler_seeds.insert(0, public_profile_url)
 
-        with ThreadPoolExecutor(max_workers=3) as discovery_executor:
-            lens_future = discovery_executor.submit(run_lens_pipeline)
-            profile_future = discovery_executor.submit(
-                search_public_profile, public_profile_url, 10
-            ) if public_profile_url else None
-            crawler_future = discovery_executor.submit(
-                crawl_public_web,
-                effective_crawler_seeds,
-                max_pages=2,
-                max_depth=1,
-                same_domain_only=True,
-                render_javascript=False,
-                request_timeout=1.5,
-                delay=0,
-            )
+        # HARD DISCOVERY BUDGET: never let one slow external service hold the
+        # entire judge demo hostage. All three discovery branches still run;
+        # we simply use whatever has completed within the budget.
+        DISCOVERY_BUDGET_SECONDS = 24
+        discovery_executor = ThreadPoolExecutor(max_workers=3)
+        lens_future = discovery_executor.submit(run_lens_pipeline)
+        profile_future = (
+            discovery_executor.submit(search_public_profile, public_profile_url, 10)
+            if public_profile_url else None
+        )
+        crawler_future = discovery_executor.submit(
+            crawl_public_web,
+            effective_crawler_seeds,
+            max_pages=7,
+            max_depth=1,
+            same_domain_only=True,
+            render_javascript=True,
+            request_timeout=1.8,
+            delay=0,
+        )
 
-            lens_candidates, search_modes, lens_errors = lens_future.result()
+        futures = [lens_future, crawler_future]
+        if profile_future is not None:
+            futures.append(profile_future)
+        done, not_done = wait(futures, timeout=DISCOVERY_BUDGET_SECONDS)
 
-            profile_candidates = []
-            profile_errors = []
-            if profile_future is not None:
-                try:
-                    profile_candidates = profile_future.result()
-                    for item in profile_candidates:
-                        item["discovery_pipeline"] = "Public Profile Search"
-                        item["search_sources"] = ["authorized public profile search"]
-                        item["social_platform"] = social_platform(item.get("link", ""))
-                        item["social_targeted"] = True
-                except Exception as exc:
-                    profile_errors.append(str(exc))
+        lens_candidates, search_modes, lens_errors = [], [], []
+        profile_candidates, profile_errors = [], []
+        crawler_response = {
+            "candidates": [], "pages_crawled": 0, "pages_visited": 0,
+            "seeds": effective_crawler_seeds, "diagnostics": [], "blocked": [],
+            "discovery_method": "bounded public-web crawler"
+        }
 
-            crawler_response = crawler_future.result()
+        if lens_future in done:
+            try:
+                lens_candidates, search_modes, lens_errors = lens_future.result()
+            except Exception as exc:
+                lens_errors.append(f"Lens: {exc}")
+        else:
+            lens_errors.append(f"Google Lens exceeded {DISCOVERY_BUDGET_SECONDS}s demo budget.")
+
+        if profile_future is not None and profile_future in done:
+            try:
+                profile_candidates = profile_future.result()
+                for item in profile_candidates:
+                    item["discovery_pipeline"] = "Public Profile Search"
+                    item["search_sources"] = ["authorized public profile search"]
+                    item["social_platform"] = social_platform(item.get("link", ""))
+                    item["social_targeted"] = True
+            except Exception as exc:
+                profile_errors.append(str(exc))
+        elif profile_future is not None:
+            profile_errors.append(f"Authorized profile search exceeded {DISCOVERY_BUDGET_SECONDS}s demo budget.")
+
+        if crawler_future in done:
+            try:
+                crawler_response = crawler_future.result()
+            except Exception as exc:
+                crawler_response["diagnostics"] = [{"status": "failed", "error": str(exc)}]
+        else:
+            crawler_response["diagnostics"] = [{
+                "status": "budget_exceeded",
+                "error": f"Crawler exceeded {DISCOVERY_BUDGET_SECONDS}s demo budget."
+            }]
+
+        # Do NOT wait for slow unfinished workers here. They are cancelled if
+        # queued and allowed to finish in the background if already running.
+        discovery_executor.shutdown(wait=False, cancel_futures=True)
 
         # Add concrete Lens social pages as high-value evidence, without
         # launching a second full crawl. This keeps the search bounded and fast.

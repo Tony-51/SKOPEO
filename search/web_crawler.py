@@ -18,6 +18,7 @@ from concurrent.futures import ThreadPoolExecutor
 from html.parser import HTMLParser
 from urllib.parse import urljoin, urlparse, urldefrag
 from urllib.robotparser import RobotFileParser
+from concurrent.futures import ThreadPoolExecutor
 
 import requests
 
@@ -275,6 +276,17 @@ def crawl_public_web(
     playwright = None
     page = None
     browser_mode = False
+
+    # Check all seed origins concurrently. Serial robots.txt checks can
+    # otherwise add several seconds before the first page is even fetched.
+    seed_origins = sorted({
+        f"{urlparse(u).scheme}://{urlparse(u).netloc}"
+        for u in seeds
+        if urlparse(u).netloc
+    })
+    if seed_origins:
+        with ThreadPoolExecutor(max_workers=min(8, len(seed_origins))) as robots_executor:
+            list(robots_executor.map(lambda origin: _robots_for(origin, robots_cache), seed_origins))
 
     if render_javascript and sync_playwright is not None:
         try:

@@ -175,12 +175,6 @@ Actual runtime depends heavily on network speed, SerpApi response time, public-s
 
 ## Known Limitations
 
-### 1. Ordinary-person discovery is not guaranteed
-
-Reverse image search is much better at finding images that already have a public web footprint than discovering an unknown ordinary person's social-media account from a face alone.
-
-For an authorized ordinary-user verification, provide the person's public profile URL. This gives the application a concrete public page to verify instead of relying entirely on reverse-image indexing.
-
 ### 2. Search results depend on SerpApi / Google Lens
 
 The project does not control Google's index or ranking. Results can vary between images and over time. SerpApi quota limits and API failures can also affect discovery.
@@ -194,28 +188,6 @@ The crawler does **not** bypass these controls.
 ### 4. robots.txt is respected
 
 The crawler checks `robots.txt` and does not intentionally ignore explicit crawling restrictions. If a public site denies the crawler, that page may not be available as a candidate.
-
-### 5. JavaScript pages are harder to crawl
-
-Some modern websites generate profile and post links dynamically. Playwright improves discovery for these pages, but it cannot guarantee that every dynamically generated or protected resource will be accessible.
-
-### 6. Face matching is probabilistic
-
-Cosine similarity is a numerical similarity measure, not proof of identity. Lighting, pose, image quality, occlusion, age, compression, and multiple faces can affect the score.
-
-Results should therefore be treated as **candidate evidence for verification**, not as an automatic declaration of a person's identity.
-
-### 7. Only publicly accessible evidence is considered
-
-The system does not log into social accounts or access private profiles. A result must be publicly reachable by the crawler/search service to be considered.
-
-### 8. Local blockchain is demonstrational
-
-The blockchain component demonstrates hash chaining and evidence integrity. It does not provide the independent consensus, immutability, or decentralized trust guarantees of a production public blockchain.
-
-### 9. Temporary local files are used
-
-The application writes processing data and search results under the project's `data/` directory. A production deployment should add appropriate cleanup, access controls, retention policies, and secure storage.
 
 ## Responsible Use
 
@@ -244,3 +216,9 @@ Local Hash-Linked Blockchain
    ↓
 Blockchain Re-verification
 ```
+
+---
+
+### Team Kuromi
+
+**Sanskriti Shukla · Tejas Thorat · Palak Upadhyaya**
